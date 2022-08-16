@@ -9,6 +9,8 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log"
+	"os"
 	"testing"
 )
 
@@ -55,4 +57,31 @@ func Test_IO_Pipe2(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Log("buffer: ", buf.String())
+}
+
+func Test_IO_WriteString(t *testing.T) {
+	if _, err := io.WriteString(os.Stdout, "Hello world"); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func Test_LimitedReader(t *testing.T) {
+	type myLimitedReader struct {
+		lmtRead io.LimitedReader
+	}
+
+	buf := new(bytes.Buffer)
+	buf.WriteString("Hello world!")
+
+	lmt_read := myLimitedReader{
+		lmtRead: io.LimitedReader{R: buf, N: 3},
+	}
+
+	n, err := io.Copy(os.Stdout, &lmt_read.lmtRead)
+	if err != nil {
+		log.Fatal("io.Copy: ", err)
+	}
+
+	t.Logf("limited reader op: %d\n", n)
+
 }
