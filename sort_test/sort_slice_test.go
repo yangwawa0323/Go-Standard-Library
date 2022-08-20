@@ -68,3 +68,13 @@ func Test_Sort_Float64(t *testing.T) {
 	t.Logf("%v is sorted float64: %v \n", s2, sort.Float64sAreSorted(s2))
 
 }
+
+func Test_Sort_Search(t *testing.T) {
+	s1 := []float64{5.2, -1.3, 0.7, -3.8, 2.6} // unsorted
+	// sort.Float64s(s1)
+
+	fdIdx := sort.Search(len(s1), func(i int) bool {
+		return s1[i] > 0
+	})
+	t.Logf("Found the first element greate than zero is: %f", s1[fdIdx])
+}
