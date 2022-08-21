@@ -75,7 +75,7 @@ var connUri ConnURI = ConnURI{
 	DefaultDatabase: "go_standard_library",
 }
 
-func Test_Http_MySQL_Db_Exec(t *testing.T) {
+func Test_MySQL_Db_Exec(t *testing.T) {
 	t.Log(" MySQL Db Exec demo")
 
 	var myConn *MySQLConn = new(MySQLConn)
