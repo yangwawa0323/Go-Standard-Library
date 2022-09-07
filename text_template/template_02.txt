@@ -1,0 +1,5 @@
+Hello {{ .Name }}
+
+The verification code is sent to your email {{ .Email }}
+
+						-- {{ .Date }}

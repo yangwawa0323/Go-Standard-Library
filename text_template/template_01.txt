@@ -1,0 +1,5 @@
+Hello {{ .Name }}
+
+Your register email is {{ .Email }}, and the initial password is sent to you email.
+
+						-- {{ .Date }}

@@ -1,0 +1,7 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>What?</title>
+<link rel=stylesheet href=/static/d.css>
+<h1>Not found</h1>
+<h2>{{.}}</h2>
+<p>Whatever you think you're looking for doesn't exist. I would suggest <a href=/>going home</a> and taking a look instead of randomly typing in URLs.</p>

@@ -1,8 +1,11 @@
 package reflect_test
 
 import (
+	"fmt"
 	"reflect"
+	"sync"
 	"testing"
+	"time"
 )
 
 func Test_Copy(t *testing.T) {
@@ -134,4 +137,164 @@ func Test_Field(t *testing.T) {
 		field := typeT.Field(i)
 		t.Logf("%d: filed is: %s, its value: %s\n", i, field.Name, field.Type)
 	}
+}
+
+type First struct {
+	A int
+	B string `json:"FieldBInFirst"`
+	C float64
+}
+
+type Second struct {
+	First
+	D bool
+}
+
+func Test_FieldByIndex(t *testing.T) {
+	s := Second{First: First{10, "ABCDEF", 15.30}, D: true}
+	ts := reflect.TypeOf(s)
+
+	// Output : reflect.StructField{Name:"B", PkgPath:"", Type:(*reflect.rtype)(0x885ba0), Tag:"json:\"FieldBInFirst\"", Offset:0x8, Index:[]int{1}, Anonymous:false}
+	// the reflect.StructField has a Tag attribute.
+	t.Logf("index 0: %#v\ntype is %s \n", ts.FieldByIndex([]int{0}), ts.Field(0).Type)
+	t.Logf("index 0, 0 %#v\n: ", ts.FieldByIndex([]int{0, 0}))
+
+	// To get the filed type of embedded struct. you can get each level field type and chainning its inside level
+	// For example: `ts.Field(0).Type` returns `reflect_test.First` struct
+	// To get the type of 2nd field in `First` , we use chainning expression
+	// `ts.Field(0).Type.Field(1).Type` that will be returned result `string`
+	t.Logf("index 0, 1: %#v\ntype is %s\n",
+		ts.FieldByIndex([]int{0, 1}),
+		ts.Field(0).Type.Field(1).Type)
+	t.Logf("index 0, 2: %#v\n", ts.FieldByIndex([]int{0, 2}))
+	t.Logf("index 1: %#v\n", ts.FieldByIndex([]int{1}))
+
+}
+
+func Test_FieldByName(t *testing.T) {
+	s := T{10, "ABCDEF", 15.4, true}
+	t.Log("Field A: ", reflect.ValueOf(&s).Elem().FieldByName("A"))
+	t.Log("Field A: ", reflect.ValueOf(&s).Elem().FieldByName("B"))
+	t.Log("Field A: ", reflect.ValueOf(&s).Elem().FieldByName("C"))
+
+	t.Log(" ============= Now set the field value ===============")
+
+	reflect.ValueOf(&s).Elem().FieldByName("A").SetInt(
+		2 * reflect.ValueOf(&s).Elem().FieldByName("A").Int())
+	reflect.ValueOf(&s).Elem().FieldByName("B").SetString(
+		fmt.Sprintf("Hello world: %s",
+			reflect.ValueOf(&s).Elem().FieldByName("B").String()))
+
+	t.Log("Field A: ", reflect.ValueOf(&s).Elem().FieldByName("A"))
+	t.Log("Field A: ", reflect.ValueOf(&s).Elem().FieldByName("B"))
+	t.Log("Field A: ", reflect.ValueOf(&s).Elem().FieldByName("C"))
+
+}
+
+func Test_MakeSlice(t *testing.T) {
+	var str []string
+	var strType reflect.Value = reflect.ValueOf(str)
+	newSlice := reflect.MakeSlice(reflect.Indirect(strType).Type(), 10, 15)
+	newSlice.Index(0).SetString("Hello")
+	// call of reflect.Value.Field on slice Value
+	// newSlice.Field(1).SetString("World")
+	newSlice.Index(1).SetString("World")
+	// cap := newSlice.Cap()
+
+	// Can not access the range out of slice length.
+	var i = 2
+
+	defer func() {
+
+		// catching the panic
+		if recover() != nil {
+			t.Log("out of range")
+			// Save the orginal elements is the newSlice
+			oldSlice := newSlice
+
+			// re-defined the slice capacity and length
+			newSlice = reflect.MakeSlice(reflect.Indirect(strType).Type(), 20, 25)
+			// copy the orginal elements to newSlice
+			reflect.Copy(newSlice, oldSlice)
+		}
+
+		// Access the newSlice elements, first of all get the interface, and use assert to the corresponding type
+		s := newSlice.Interface().([]string)
+		s[11] = "Better way"
+		t.Logf("newSlice is: %q, type: %#v", s, newSlice.Type().String())
+		t.Log("Kind: ", newSlice.Kind())
+		t.Log("Length: ", newSlice.Len())
+		t.Log("Capacity: ", newSlice.Cap())
+	}()
+
+	// panic out of slice range
+	for ; i < newSlice.Len()+1; i++ {
+		newSlice.Index(i).SetString(fmt.Sprintf("%d", i))
+	}
+
+}
+
+func Test_MakeMap(t *testing.T) {
+	var strmap map[string]string
+
+	var strmapType = reflect.ValueOf(strmap)
+	newMap := reflect.MakeMap(reflect.Indirect(strmapType).Type())
+	_newmap := newMap.Interface().(map[string]string)
+	_newmap["host"] = "localhost"
+	t.Logf("newMap: %#v", newMap)
+}
+
+func Test_MakeChan(t *testing.T) {
+	var str []chan string = make([]chan string, 10)
+	var strType = reflect.ValueOf(&str)
+
+	strChanSliceType := reflect.MakeSlice(reflect.Indirect(strType).Type(), 0, 0)
+
+	newStrChanSlice := strChanSliceType.Interface().([]chan string)
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	var ready = make(chan bool, 1)
+
+	go func() {
+		if <-ready {
+			for i := 0; i < 10; i++ {
+				t.Log("Read message from channel :", <-newStrChanSlice[i])
+			}
+		}
+		wg.Done()
+	}()
+
+	go func() {
+
+		time.Sleep(3 * time.Second)
+		var strChan = make(chan string, 512)
+		for i := 0; i < 10; i++ {
+			strChan <- fmt.Sprintf("Channel %d", i)
+			newStrChanSlice = append(newStrChanSlice, strChan)
+		}
+		ready <- true
+		wg.Done()
+
+	}()
+
+	wg.Wait()
+}
+
+type Sum func(int64, int64) int64
+
+func Test_MakeFunc(t *testing.T) {
+	funcType := reflect.TypeOf(Sum(nil))
+	mul := reflect.MakeFunc(funcType, func(args []reflect.Value) []reflect.Value {
+		a := args[0].Int()
+		b := args[1].Int()
+		return []reflect.Value{reflect.ValueOf(a + b)}
+	})
+
+	fn, ok := mul.Interface().(Sum)
+	if !ok {
+		return
+	}
+	t.Log(fn(5, 6))
 }

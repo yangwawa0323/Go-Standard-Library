@@ -1,0 +1,149 @@
+* {font-family:sans-serif}
+html {height:100%}
+body {
+	min-height: 100%;
+	width: 90vw;
+	margin: 0 auto;
+	box-shadow: 0 0 40px #ccc;
+	border-width: 0 1px;
+	border-style: solid;
+	border-color: #aaa;
+	position: relative;
+}
+h1,h2 {margin:0}
+h1 {
+	font-size: 30px;
+	padding: .5em 0 0 8px;
+}
+h2 {
+	font-size: 20px;
+	font-weight: 500;
+	padding: 0 0 1em 8px;
+}
+p {
+	color: #444;
+	padding-left: 8px;
+}
+.b {
+	border-style: solid;
+	border-color: #ddd;
+}
+table {
+	padding: 10px;
+	width: 100%;
+	border-collapse: collapse;
+	border-width: 1px 0;
+	table-layout: fixed;
+}
+tr:nth-of-type(2n) {background:#f0f0f0}
+.f a {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	padding-left: 20px;
+	height: 16px;
+	font-size: 14px;
+	/* line-height: 13px; */
+	display: block;
+	background: url('/static/icons16x.png') 0 -16px no-repeat;
+	position: relative;
+}
+th,.s {
+	text-align: left;
+	border-width: 0 1px;
+}
+th,th.s{
+	border-bottom: 1px solid #ddd;
+	background: #f8f8f8;
+	background: -moz-linear-gradient(-90deg, #fafafa, #f0f0f0);
+	background: -webkit-linear-gradient(#fafafa, #f0f0f0);
+	text-shadow: 0 1px 0 #fff;
+}
+th,td {padding:8px}
+tr>*:nth-child(2) {width:110px}
+tr>*:nth-child(3) {width:170px}
+footer{padding:10px 28px 30px;opacity:.5;font-size:14px}
+footer::after {content:" items"}
+/* code viewer */
+#code-viewer {
+	top: 200px;
+	left: 200px;
+	height: 0px;
+	width: 0px;
+	position: absolute;
+	tab-size: 4;
+	/*background: -webkit-linear-gradient(#fafafa, #fefefe);
+	border-top: 1px solid #bbb;
+	border-left: 1px solid #aaa;
+	border-right: 1px solid #aaa;
+	border-bottom: 1px solid #888;
+	box-shadow: 0 5px 40px rgba(0,0,0,.3);*/
+	overflow-y: scroll;
+	-webkit-transform: translateZ(0);
+	-webkit-transition: all 0.2s ease-out;
+}
+code {
+	margin: 20px;
+	display: block;
+	font-family: monospace;
+	-webkit-transform-origin: left top;
+	-webkit-transform: translateZ(0) scale(0);
+	-webkit-transition: all 0.2s ease-out;
+}
+code * {
+	font-family: monospace;
+}
+pre #handlebars {
+	height: 20px;
+	background: -webkit-linear-gradient(#fafafa, #f0f0f0);
+	text-shadow: 0 -1px 0 #888, 0 1px 0 #fff;
+	line-height: 20px;
+	border-bottom: 1px solid #ccc;
+	position: fixed;
+	width: 100%;
+}
+pre #x {
+	float: right;
+	height: 16px;
+	width: 16px;
+	line-height: 16px;
+	text-align: center;
+	background: #000;
+	color: #fff;
+	border-radius: 8px;
+}
+
+/* file icons */
+.f a.r{background-position:0 0}
+.f a[href$=".mp3"],	.f a[href$=".m4a"],	.f a[href$=".flac"]
+{background-position:0 -32px}
+.f a[href$=".mkv"],	.f a[href$=".m4v"],	.f a[href$=".mov"]
+{background-position:0 -48px}
+.f a[href$=".txt"],	.f a[href$=".rb"],	.f a[href$=".py"],
+.f a[href$=".pl"],	.f a[href$=".c"],	.f a[href$=".h"],
+.f a[href$=".go"],	.f a[href$=".got"],	.f a[href$=".md"],
+.f a[href$=".html"],.f a[href$=".css"],	.f a[href$=".js"],
+.f a[href$="readme"],.f a[href$="makefile"],.f a[href$=".erb"],
+.f a[href$=".ini"],	.f a[href$=".conf"]
+{background-position:0 -64px}
+.f a[href$=".jpg"],	.f a[href$=".png"],	.f a[href$=".jpeg"],
+.f a[href$=".gif"],	.f a[href$=".tiff"],.f a[href$=".bmp"],
+.f a[href$=".psd"],	.f a[href$=".ico"]
+{background-position:0 -80px}
+.f a[href$=".torrent"]
+{background-position:0 -96px}
+.f a[href$=".zip"],	.f a[href$=".tar"],	.f a[href$=".gz"],
+.f a[href$=".bz2"],	.f a[href$=".rar"],	.f a[href$=".7z"],
+.f a[href$=".lzma"],.f a[href$=".hqx"],	.f a[href$=".lzh"]
+{background-position:0 -112px}
+.f a[href$="/"]:not(.r) {background-position:0 -128px}
+.f a.l:before {
+	background: url('/static/icons16x.png') 0 -144px no-repeat;
+	width: 16px;
+	height: 16px;
+	display: block;
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+}

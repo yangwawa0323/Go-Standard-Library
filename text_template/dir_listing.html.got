@@ -1,0 +1,10 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>{{.Path}}</title>
+<link rel=stylesheet href="/static/d.css">
+<h1>Directory listing</h1><h2>{{.Path}}</h2>
+<table class=b><thead><th class=f>File<th class="s b">Size<th class=m>Date Modified</thead><tbody>
+{{if .Parent}}<tr><td class=f><a href="{{.Parent}}">Parent Directory</a><td class="s b"><td class=m>{{end}}
+{{range .Files}}<tr><td class=f><a class="{{if .IsDir}}r{{end}} {{if .IsLink}}l{{end}}" href="{{.Fullname}}">{{.Basename}}</a><td class="s b">{{.Size}}<td class=m>{{.Modified}}{{end}}
+</tbody></table>
+<footer>{{len .Files}}</footer>
