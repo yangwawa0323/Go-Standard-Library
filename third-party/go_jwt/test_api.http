@@ -1,0 +1,28 @@
+@hostname = localhost
+@port = 8080
+@host={{hostname}}:{{port}}
+
+# 1. Sign in
+# @name signin
+POST http://{{host}}/signin
+Content-Type: application/json
+
+{
+	"username" : "user2",
+	"password" : "password2"
+}
+
+
+###
+# 2. Access
+# @name welcome
+GET http://{{host}}/welcome
+Set-Cookie: {{signin.response.headers.Set-Cookie}}
+
+
+###
+# 3. Refresh Token
+# @name refresh
+GET http://{{host}}/refresh
+
+
